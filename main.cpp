@@ -9,6 +9,8 @@
 #include "ccs811.h" // air quality sensor
 #include <Adafruit_GFX.h>    // TFT screen
 #include <Adafruit_ST7735.h>  // TFT screen
+#include <Fonts/FreeSans18pt7b.h>
+#include <Fonts/FreeSansBold9pt7b.h>
 #include "MHZ19.h" // air quality sensor (another)
 
 // air quality sensor (mhz19)
@@ -20,6 +22,12 @@ MHZ19 myMHZ19;  // Constructor for library
 #define TFT_RST   D4     // not used
 #define TFT_CS    D3     // TFT CS  pin is connected to NodeMCU pin D3
 #define TFT_DC    D0     // TFT DC  pin is connected to NodeMCU pin D0
+
+// CO2 levels
+// Establim nivells de CO2
+#define CO2_REGULAR 1000
+#define CO2_DOLENT 1700
+#define CO2_CRITIC 2500
 
 // set DHT pinout
 
@@ -118,6 +126,9 @@ void setup() {
   // tft setup
   tft.initR(INITR_BLACKTAB);     // initialize a ST7735S chip, black tab
   tft.setRotation(3);
+  tft.fillScreen(ST7735_BLACK);
+  //tft.setTextSize(2);
+  tft.setFont(&FreeSansBold9pt7b);
 
 }
 
@@ -184,52 +195,61 @@ void loop() {
 
   // print info on TFT screen
 
-  tft.fillScreen(ST7735_BLACK);
-  tft.setTextSize(2);                         
-  tft.setTextColor(ST7735_BLUE, ST7735_BLACK);       
-  tft.setCursor(0,10);                              
+                         
+  tft.setTextColor(ST7735_CYAN, ST7735_BLACK);       
+  tft.setCursor(10,20);                              
   tft.print("Tmp C:");
-  tft.setTextColor(ST7735_RED, ST7735_BLACK);
-  tft.setCursor(80,10);
+  tft.fillRect(80, 0, 60, 25, ST7735_BLACK);
+  tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
+  tft.setCursor(80,20);
   tft.print(temperatura);
-  tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
-  tft.setCursor(0,30);
+  tft.setTextColor(ST7735_CYAN, ST7735_BLACK);
+  tft.setCursor(10,40);
   tft.print("Hum %:");
-  tft.setCursor(80,30);                             
-  tft.setTextColor(ST7735_RED, ST7735_BLACK);
+  tft.setCursor(80,40);                             
+  tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
   if (!isnan(event.relative_humidity)) {
+    tft.fillRect(80, 25, 60, 25, ST7735_BLACK);
     tft.print(event.relative_humidity);
   }
-  tft.setCursor(0,50);
-  tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
+  tft.setCursor(10,60);
+  tft.setTextColor(ST7735_CYAN, ST7735_BLACK);
   tft.print("HPa:");
-  tft.setCursor(55,50);                             
-  tft.setTextColor(ST7735_RED, ST7735_BLACK);
+  tft.setCursor(55,60);
+  tft.fillRect(55, 47, 80, 25, ST7735_BLACK);
+  tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
   tft.print(pressio);
-  tft.setCursor(0,70);
-  tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
+  tft.setCursor(10,80);
+  tft.setTextColor(ST7735_CYAN, ST7735_BLACK);
   tft.print("Lux:");
-  tft.setCursor(55,70);                            
-  tft.setTextColor(ST7735_RED, ST7735_BLACK);
+  tft.setCursor(55,80);                         
+  tft.fillRect(55, 65, 70, 22, ST7735_BLACK);
+  tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
   tft.print(int(l_event.light));
-  tft.setCursor(0,90);
-  tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
-  tft.print("CO2c:");
-  tft.setCursor(120,90);
+  tft.setCursor(10,100);
+  tft.setTextColor(ST7735_CYAN, ST7735_BLACK);
+  tft.print("VOCs:");
+  tft.setCursor(120,100);
   tft.print("ppm");
-  tft.setCursor(65,90);                            
-  tft.setTextColor(ST7735_RED, ST7735_BLACK);
-  tft.print(eco2);
-  tft.setCursor(0,110);
-  tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
-  tft.print("CO2m:");
-  tft.setCursor(120,110);
+  tft.setCursor(70,100);
+  tft.fillRect(65, 85, 50, 22, ST7735_BLACK);
+  tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
+  tft.print(etvoc);
+  tft.setCursor(10,120);
+  tft.setTextColor(ST7735_CYAN, ST7735_BLACK);
+  tft.print("CO2:");
+  tft.setCursor(120,120);
   tft.print("ppm");
-  tft.setCursor(65,110);                             
-  tft.setTextColor(ST7735_RED, ST7735_BLACK);
+  tft.setCursor(70,120);
+  tft.fillRect(65, 105, 50, 25, ST7735_BLACK);
+  tft.setTextColor(ST7735_GREEN, ST7735_BLACK);
+  if (mhzco2 > CO2_REGULAR) tft.setTextColor(ST7735_YELLOW, ST7735_BLACK);
+  if (mhzco2 > CO2_DOLENT) tft.setTextColor(ST7735_ORANGE, ST7735_BLACK);
+  if (mhzco2 > CO2_CRITIC) tft.setTextColor(ST7735_RED, ST7735_BLACK);
   tft.print(mhzco2);
 
-  timecount++; // increases every 40 seconds
-  if (timecount==500) { ESP.reset(); } // reset ESP every 20000sec (5h:30m)
+  timecount++; // increases every 14 seconds
+  if (timecount==1500) { ESP.reset(); } // reset ESP every 21000sec (almost 6h)
 
 }
+
