@@ -38,8 +38,7 @@ void CO2_Init(int rx_pin, int tx_pin, int baudRate) {
    }
    else {
       Serial.println("CO2 Successfully Initialized. Heating up ...");
-      //delay(10000);
-      delay(1000);
+      delay(1000);   // as much time as possible is recommended
    }
 }
 
@@ -60,12 +59,12 @@ int getCO2() {
 
    int timeout = 0;
    while (SoftSerial_CO2->available() < 7) {
-      timeout++; 
+      timeout++;
       if (timeout > 10) {
          while(SoftSerial_CO2->available()) {
             SoftSerial_CO2->read();
          }
-         break;                    
+         break;
       }
       delay(50);
    }

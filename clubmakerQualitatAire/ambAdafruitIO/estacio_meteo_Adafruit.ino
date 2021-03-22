@@ -66,12 +66,13 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 float temperatura;
 float pressio;
 float humitat;
-float co2, nou_co2;
+int co2, nou_co2;
 
 int timecount = 0;
 
 void setup() {
-   Serial.begin(9600);   while(!Serial);    // Inicialitza la consola sèrie
+   // Inicialitza la consola sèrie
+   Serial.begin(9600);   while(!Serial);
    Serial.println("");
 
    // Connecta amb io.adafruit.com (establiment Wifi inclòs)
@@ -149,10 +150,10 @@ void loop() {
    if (co2 > CO2_REGULAR) tft.setTextColor(ILI9341_YELLOW);
    if (co2 > CO2_DOLENT) tft.setTextColor(ILI9341_ORANGE);
    if (co2 > CO2_CRITIC) tft.setTextColor(ILI9341_RED);
-   tft.print((int)co2);   tft.print(" ppm CO2");
+   tft.print(co2);   tft.print(" ppm CO2");
 
    tft.setTextColor(ILI9341_GREEN);
-   
+
    tft.fillRect(40, 87, 85, 20, ILI9341_BLACK);
    tft.setCursor(40,105);
    tft.print(temperatura);   tft.print(" C");
